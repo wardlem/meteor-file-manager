@@ -1,0 +1,10 @@
+test:
+  email: test@fake.com
+  username: Tester
+  password: password
+other:
+  email: other@fake.com
+  username: Other
+  password: password
+
+

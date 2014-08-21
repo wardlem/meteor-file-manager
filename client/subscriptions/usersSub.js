@@ -1,0 +1,1 @@
+usersSub = Meteor.subscribe('users');

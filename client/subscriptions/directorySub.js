@@ -1,0 +1,1 @@
+directorySub = Meteor.subscribe('directory', "");

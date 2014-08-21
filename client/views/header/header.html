@@ -1,0 +1,35 @@
+<template name="header">
+    <header>
+        <div class="ui green inverted menu" style="overflow: hidden">
+            {{#if loggedIn }}
+
+            <div class="ui item breadcrumb" style="margin-bottom: 0">
+                <a class="section" href="{{pathFor 'home'}}">Home</a>
+                {{#each crumbs }}
+                    <i class="right arrow icon divider"></i>
+                    <a class="section" href="{{pathFor 'files'}}">{{ name }}</a>
+                {{/each}}
+                <a class="section">Food</a>
+                <i class="right arrow icon divider"></i>
+                <a class="section">Fruit</a>
+                <i class="right arrow icon divider"></i>
+                <div class="active section">Apples</div>
+            </div>
+            <div class="right menu">
+                <a id="logout" class="item">Sign Out <i class="large sign out icon"></i></a>
+                <div class="item">
+                    <div class="ui icon input">
+                        <input type="text" placeholder="Search...">
+                        <i class="search link icon"></i>
+                    </div>
+                </div>
+
+            </div>
+            {{else}}
+            <div class="item">Please Sign In</div>
+            {{/if}}
+        </div>
+    </header>
+
+</template>
+

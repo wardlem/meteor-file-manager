@@ -1,0 +1,26 @@
+<template name="login">
+    {{> header }}
+
+    <div class="ui stackable center aligned three column grid">
+
+        <div class="column">
+            <form id="login-form" class="ui fluid form segment">
+                <h3 class="ui center aligned header">Sign In</h3>
+                <div class="field">
+                    <!--<label for="login-email">Username</label>-->
+                    <input id="login-email" placeholder="Email" type="email">
+                </div>
+                <div class="field">
+                    <!--<label for="login-password">Password</label>-->
+                    <input type="password" placeholder="Password" id="login-password">
+                </div>
+                <input type="submit" id="login-submit" class="ui blue right aligned submit button" value="Login">
+            </form>
+
+        </div>
+
+
+
+    </div>
+
+</template>
