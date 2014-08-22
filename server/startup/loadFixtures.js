@@ -7,7 +7,14 @@ function loadFixture(fixtures, collection) {
   }
 }
 
-Meteor.startup(function () {
 
+Meteor.startup(function () {
+    if (!Directory.findOne({path: '/Shared'})){
+        Directory.insert({
+            up: '/',
+            path: '/Shared',
+            owner: 'Shared'
+        })
+    }
   //loadFixture(Fixtures['dummyFixture'], DummyCollection);
 });

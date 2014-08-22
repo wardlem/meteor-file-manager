@@ -5,7 +5,7 @@ Meteor.publish('files',
         'metadata._Resumable': { $exists: false },
         $or: [
           {
-            'metadata.owner': this.userId
+            'metadata.owner': this.user().username
           },
           {
             'metadata.access' : {$not: 'private'}

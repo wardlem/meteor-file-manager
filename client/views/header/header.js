@@ -1,6 +1,9 @@
 Template['header'].helpers({
   loggedIn: function(){
     return Meteor.user() !== null;
+  },
+  notCurrentCrumb: function(crumb){
+      return crumb.active !== 'active';
   }
 });
 

@@ -4,16 +4,13 @@
             {{#if loggedIn }}
 
             <div class="ui item breadcrumb" style="margin-bottom: 0">
-                <a class="section" href="{{pathFor 'home'}}">Home</a>
                 {{#each crumbs }}
+                    <a class="section {{active}}" href="/files{{path}}">{{ name }}</a>
+                    {{#if notCurrentCrumb this}}
                     <i class="right arrow icon divider"></i>
-                    <a class="section" href="{{pathFor 'files'}}">{{ name }}</a>
+                    {{/if}}
                 {{/each}}
-                <a class="section">Food</a>
-                <i class="right arrow icon divider"></i>
-                <a class="section">Fruit</a>
-                <i class="right arrow icon divider"></i>
-                <div class="active section">Apples</div>
+
             </div>
             <div class="right menu">
                 <a id="logout" class="item">Sign Out <i class="large sign out icon"></i></a>
