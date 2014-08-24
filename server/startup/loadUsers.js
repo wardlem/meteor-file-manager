@@ -6,10 +6,10 @@ function loadUser(user) {
 }
 
 function loadHomeDirectory(user) {
-    var directoryExists = typeof Directory.findOne({up: '/', path: '/' + user.username}) === 'object';
+    var directoryExists = typeof Directories.findOne({up: '/', path: '/' + user.username}) === 'object';
 
     if (!directoryExists) {
-        Directory.insert({
+        Directories.insert({
             up: '/',
             path: '/' + user.username,
             owner: user.username

@@ -1,3 +1,4 @@
+// Creating a new directory
 var newDir = null;
 var newDirDep = new Deps.Dependency;
 var statusDep = new Deps.Dependency;
@@ -16,7 +17,7 @@ var newDirIsValid = function() {
         return false;
     }
     var path = newDir.up + '/' + newDir.name;
-    return !Directory.findOne({path: path});
+    return !Directories.findOne({path: path});
 };
 
 var setNewDirStatus = function() {
@@ -41,7 +42,10 @@ function saveNewDir() {
             path: (newDir.up === '/' ? '' : newDir.up ) + '/' + newDir.name,
             owner: newDir.owner
         };
-        Directory.insert(insert);
+        if (insert.path.substring(0,7) === '/Shared'){
+            insert.owner = 'Shared';
+        }
+        Directories.insert(insert);
         console.log(insert);
         setNewDir(null);
     }
@@ -52,16 +56,39 @@ function cancelNewDir() {
     setNewDir(null)
 }
 
+// New file
+function createFile(event, dir){
+    FS.Utility.eachFile(event, function(file) {
+        if (!file.size){
+            return;
+        }
+        var fsFile = new FS.File(file);
+        fsFile.metadata = {
+            owner: Meteor.user().username,
+            directory: dir,
+            name: file.name,
+            access: dir.substring(0, 7) === '/Shared' ? 'public' : 'private'
+        };
+        console.log(fsFile);
+
+        Files.insert(fsFile, function (err, fileObj) {
+            //Inserted new doc with ID fileObj._id, and kicked off the data upload using HTTP
+            if (err){
+                console.log(err)
+            } else {
+                console.log('file successfully saved??');
+            }
+        });
+    });
+}
+
+
 Template.files.helpers({
-    dirName: function(dir){
-        return dir.path.split('/').pop();
-    },
     canDeleteDir: function(dir){
-        return !Directory.findOne({up: dir.path})
+        return !Directories.findOne({up: dir.path})
             && !Files.findOne({directory: dir.path})
             && dir.up != '/'
             && dir.owner === Meteor.user().username
-
     },
     creatingDir: function(){
         return getNewDir() !== null;
@@ -71,13 +98,41 @@ Template.files.helpers({
     },
     newDirIsValid: function() {
         return getNewDirStatus();
+    },
+    fileIconClass: function(file) {
+        switch(true){
+            case file.isImage():
+                return 'photo';
+            case file.isAudio():
+                return 'music';
+            case file.isVideo():
+                return 'video';
+            default:
+                return 'text file'
+        }
+
+    },
+    formatSize: function(size) {
+        if (size < 1000) {
+            return size + " bytes"
+        }
+        size = size / 1000;
+        if (size < 1000) {
+            return (Math.round(size * 10) / 10.0)  + " kB"
+        }
+        size = size / 1000;
+        return (Math.round(size * 10) / 10.0) + " MB"
     }
 });
 
 Template.files.events({
     "click .directory": function() {
-        Router.go("directory", {path: this.path});
         setNewDir(null);
+        if (this.isRoot()) {
+            Router.go('home');
+        } else {
+            Router.go("directory", {path: this.path});
+        }
 
     },
     "mouseover .directory": function() {
@@ -87,7 +142,8 @@ Template.files.events({
         $("#directory-" + this._id).find('.folder.icon').removeClass('open')
     },
     "click #add-directory": function(){
-        setNewDir({owner: Meteor.user().username, up: currentDirectory, name: '', status: 'error'});
+        console.log(this);
+        setNewDir({owner: Meteor.user().username, up: this.path, name: '', status: 'error'});
         window.setTimeout(function(){
             $("#new-directory-name").focus();
         }, 50);
@@ -103,5 +159,36 @@ Template.files.events({
         }
     },
     "click #save-new-directory": saveNewDir,
-    "click #cancel-new-directory": cancelNewDir
+    "click #cancel-new-directory": cancelNewDir,
+
+    // functionality for dropped events
+    "dropped .directory": function(event, temp){
+        console.log(this);
+        createFile(event, this.path);
+    },
+
+    "click .file": function(e) {
+        window.location = this.url({download: true});
+    },
+    "dropped .files": function(e) {
+        console.log(this);
+        createFile(event, this.path);
+    },
+    "click .delete-directory": function(e){
+        console.log(this);
+        Directories.remove(this._id);
+    },
+    "click .delete-file": function(e){
+        var file = this;
+        SemanticModal.confirmModal(
+            {
+                header: "Confirm Delete",
+                message: "Are you sure you want to permanently delete " + file.metadata.name + "?",
+                callback: function() {
+                    Files.remove(file._id)
+                }
+            }
+        );
+
+    }
 });

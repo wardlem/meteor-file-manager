@@ -1,5 +1,3 @@
-currentDirectory = '/';
-
 Router.onBeforeAction(function() {
     if (!Meteor.userId()){
         this.redirect('login');
@@ -9,12 +7,8 @@ Router.onBeforeAction(function() {
 var HomeController = RouteController.extend({
     template: 'files',
     data: function(){
-        var path = '/';
         return {
-            currentDir: path,
-            dirs: Directory.find({up: path}, {sort: ['path', 'asc']}),
-            files: Files.find({"metadata.directory": path}),
-            crumbs: [{path: '', name: 'Home', active: 'active'}]
+            currentDir: Directories.findOne({path: '/'})
         }
     }
 });
@@ -23,27 +17,9 @@ var FilesController = RouteController.extend({
     template: 'files',
     data: function(){
         var params = this.params;
-        var crumbs = [];
-        var pathParts = (params.path || '').split('/');
-        var first = true;
-        var path = "/" + params.path;
-        currentDirectory = path;
-
-        while(pathParts.length > 0){
-            var name = pathParts.pop();
-            crumbs.push({
-                name: name,
-                path: (pathParts.length ? '/' + pathParts.join('/') : "") + '/' + name,
-                active: first ? 'active' : 'inactive'
-            });
-            first = false;
-        }
-        crumbs.push({path: '', name: 'Home', active: 'inactive'});
+        var path = "/" + (params.path || '');
         return {
-            currentDir: params.path,
-            crumbs: crumbs.reverse(),
-            dirs: Directory.find({up: path}, {sort: ['path', 'asc']}),
-            files: Files.find({"metadata.directory": path})
+            currentDir: Directories.findOne({path: path})
         }
 
     }
@@ -70,7 +46,7 @@ Router.map(function () {
     });
     this.route('root', {
         path: '/files',
-        controller: HomeController
+        controller: FilesController
     });
     this.route('directory', {
         path: '/files/:path(*)',

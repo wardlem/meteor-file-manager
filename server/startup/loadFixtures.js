@@ -9,8 +9,15 @@ function loadFixture(fixtures, collection) {
 
 
 Meteor.startup(function () {
-    if (!Directory.findOne({path: '/Shared'})){
-        Directory.insert({
+    if (!Directories.findOne({path: '/'})){
+        Directories.insert({
+            up: 'NONE',
+            path: '/',
+            owner: 'Shared'
+        })
+    }
+    if (!Directories.findOne({path: '/Shared'})){
+        Directories.insert({
             up: '/',
             path: '/Shared',
             owner: 'Shared'

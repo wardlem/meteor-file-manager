@@ -16,5 +16,8 @@ semantic-ui
 collection2
 velocity-html-reporter
 mocha-web-velocity
-fileCollection
-accounts-templates-semantic-ui
+ui-dropped-event
+collectionFS
+cfs-gridfs
+bootboxjs
+semantic-ui-modal
